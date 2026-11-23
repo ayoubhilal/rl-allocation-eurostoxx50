@@ -110,8 +110,9 @@ def main() -> None:
     mine = np.array([w["ret"] for w in weeks[:-1]])
     common = min(len(mine), len(official))
     gap = float(np.max(np.abs(mine[:common] - official[:common])))
-    if gap > 1e-6:
-        raise SystemExit(f"Écart avec le backtest officiel : {gap}")
+    if gap > 1e-6:  # après une mise à jour, Yahoo peut avoir réajusté d'anciens prix (dividendes, divisions)
+        print(f"Avertissement : écart de {gap:.2e} avec le backtest officiel sur les semaines communes "
+              "(prix historiques réajustés par Yahoo). Le tableau de bord utilise les données à jour.")
 
     # stratégies de référence recalculées sur les données courantes (mêmes dates que l'agent)
     base = run_all_baselines(md, "test", cb)
@@ -121,6 +122,7 @@ def main() -> None:
     names = pd.read_csv(project_path(cfg["paths"]["raw_dir"]) / "tickers_resolved.csv").set_index("yahoo_ticker")["name"]
     data = {
         "generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "data_until": str(md.dates[-1].date()),
         "model": "Agent PPO - ensemble de 5 modèles, inclinaisons autour du max-Sharpe",
         "tickers": md.assets,
         "names": {t: str(names.get(t, t)) for t in md.assets},

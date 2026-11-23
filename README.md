@@ -52,9 +52,32 @@ glissante, et le jeu de test n'est évalué qu'une fois (verrou).
 - *Pire perte* = plus forte baisse entre un sommet et le creux suivant, sur toute la période (ici
   essentiellement le krach de mars 2020 en validation et la baisse de 2022 au test).
 
-## Interface interactive
+## Application
 
-Ouvrir **`dashboard/index.html`** dans un navigateur (fichier autonome, aucune installation). Le carnet de bord de
+Double-cliquer sur **`lancer_application.bat`** (ou `.venv/Scripts/python app/server.py`) : l'application
+s'ouvre dans le navigateur, sans aucune commande à taper. Elle ne tourne que sur votre machine
+(`http://127.0.0.1:8765`) ; laisser la fenêtre noire ouverte pendant l'utilisation. Quatre onglets :
+
+| Onglet | Rôle |
+|---|---|
+| **Cette semaine** | le carnet de bord de l'agent (décrit ci-dessous) |
+| **Mettre à jour** | un bouton télécharge les prix jusqu'à la dernière semaine terminée, fait décider les 5 modèles pour la semaine suivante et recalcule l'agent, l'ETF et les stratégies de référence (1 à 2 min, sortie affichée en direct) |
+| **Résultats du projet** | tableaux officiels du test 2022-2026 et de la validation 2014-2021, figures du rapport |
+| **Vérifications** | lance les 25 tests automatiques |
+
+La mise à jour garde **la liste figée des 50 titres** sur lesquels le modèle a été entraîné (Wikipédia
+n'est pas relu) et ne modifie **ni les modèles ni les résultats officiels** du rapport. Faite à partir du
+samedi, elle affiche le résultat de la semaine écoulée face à l'ETF et la nouvelle allocation.
+En ligne de commande, la même mise à jour s'écrit :
+
+```bash
+.venv/Scripts/python scripts/01_download_data.py --update
+.venv/Scripts/python dashboard/build_dashboard.py
+```
+
+### Carnet de bord
+
+Sans l'application, on peut aussi ouvrir directement **`dashboard/index.html`** dans un navigateur (fichier autonome, aucune installation). Le carnet de bord de
 l'agent affiche, pour la **semaine en cours** par défaut ou n'importe quelle semaine depuis janvier 2022 :
 
 - un **ruban des semaines** : une barre par semaine, bleue si l'agent a fait mieux que l'ETF, rouge sinon ;
@@ -76,9 +99,9 @@ l'allocation est celle décidée à la dernière clôture disponible ; son rende
 .venv/Scripts/python dashboard/build_dashboard.py --html-only  # reconstruit la page à partir de dashboard/data.json
 ```
 
-Le script vérifie que les rendements de l'agent sont identiques à ceux du backtest officiel
-(`results/tables/test_backtest_RL_ensemble.csv`). Après une mise à jour des données
-(`01_download_data.py --refresh`), il calcule l'allocation de la nouvelle semaine en cours.
+Le script compare les rendements de l'agent à ceux du backtest officiel
+(`results/tables/test_backtest_RL_ensemble.csv`) sur les semaines communes (écart actuel < 10⁻⁶) ; après
+une mise à jour, un léger écart peut apparaître si Yahoo a réajusté d'anciens prix, il est alors signalé.
 
 ## Méthode
 
@@ -153,11 +176,15 @@ py -3.13 -m venv .venv
 - Le test a déjà été exécuté : `--force` est nécessaire pour le rejouer, et la tentative est journalisée.
 - Ne pas baser le venv sur le Python d'Anaconda (conflit de DLL avec cvxpy/osqp sous Windows) ;
   `scs` est épinglé à 3.2.7 (la 3.3.2 plante à la fermeture de Python sous Windows).
-- `--refresh` re-télécharge les données jusqu'à la date du jour : les résultats changeront alors.
+- `--refresh` relit la composition sur Wikipédia et re-télécharge tout : les résultats changeront alors.
+  Pour le suivi hebdomadaire, utiliser `--update` (ou l'application), qui garde les 50 titres du modèle.
 
 ## Structure
 
 ```
+lancer_application.bat       lance l'application (double-clic)
+app/server.py, index.html    application locale : semaine, mise à jour, résultats, tests
+dashboard/                   carnet de bord (build_dashboard.py, template.html, index.html)
 config.yaml                  tous les paramètres (données, signaux, environnement, PPO, protocole)
 requirements.txt
 src/data.py                  constituants Wikipédia -> tickers Yahoo -> prix nettoyés

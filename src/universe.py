@@ -40,8 +40,11 @@ def build_full_universe(cfg: dict[str, Any]) -> pd.DataFrame:
     return px
 
 
-def download_context(cfg: dict[str, Any], refresh: bool = False) -> Path:
-    """Télécharge (ou réutilise) l'historique de l'indice et du VIX utilisé comme contexte de marché."""
+def download_context(cfg: dict[str, Any], refresh: bool = False, end: str | None = None) -> Path:
+    """Télécharge (ou réutilise) l'historique de l'indice et du VIX utilisé comme contexte de marché.
+
+    end : borne de fin exclue (par défaut celle de la configuration, qui fige les données du rapport).
+    """
     cc = cfg["features"]["context"]
     path = project_path(cfg["paths"]["raw_dir"]) / cc["cache_file"]
     if path.exists() and not refresh:
@@ -49,7 +52,7 @@ def download_context(cfg: dict[str, Any], refresh: bool = False) -> Path:
     import yfinance as yf
 
     tickers = [cc["index"], cc["vix"]]
-    raw = yf.download(tickers, start=cc["download_start"], end=cc["download_end"], auto_adjust=True, progress=False)
+    raw = yf.download(tickers, start=cc["download_start"], end=end or cc["download_end"], auto_adjust=True, progress=False)
     close = raw["Close"][tickers]
     close.index = pd.to_datetime(close.index).tz_localize(None)
     if close.isna().all().any():

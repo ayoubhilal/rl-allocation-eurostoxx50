@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -26,10 +26,20 @@ from src.universe import download_context  # noqa: E402
 from src.utils import ensure_dirs, load_config, project_path, set_global_seed, setup_logging  # noqa: E402
 
 
+def last_completed_week_end(today: date) -> date:
+    """Vendredi de la dernière semaine de bourse terminée (les cours partiels de la semaine en cours sont exclus)."""
+    if today.weekday() >= 5:  # samedi ou dimanche : la semaine qui vient de finir
+        return today - timedelta(days=today.weekday() - 4)
+    return today - timedelta(days=today.weekday() + 3)  # lundi à vendredi : vendredi précédent
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default=None)
     parser.add_argument("--refresh", action="store_true", help="re-télécharge même si le cache brut existe")
+    parser.add_argument("--update", action="store_true",
+                        help="met à jour les prix des titres déjà retenus jusqu'à la dernière semaine terminée "
+                             "(sans relire Wikipédia : la liste des 50 titres du modèle reste figée)")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
@@ -40,8 +50,19 @@ def main() -> None:
     raw = project_path(cfg["paths"]["raw_dir"])
     f_tickers, f_close, f_vol = raw / "tickers_resolved.csv", raw / "close.csv", raw / "volume.csv"
     benchmarks = [dcfg["benchmark"], dcfg["benchmark_total_return"]]
+    end = dcfg["end_date"] or str(last_completed_week_end(date.today()) + timedelta(days=1))  # borne exclue
 
-    if args.refresh or not (f_tickers.exists() and f_close.exists() and f_vol.exists()):
+    if args.update and f_tickers.exists():
+        tickers = pd.read_csv(f_tickers)["yahoo_ticker"].dropna().tolist()
+        log.info("Mise à jour de %d titres + benchmarks jusqu'au %s (dernière semaine terminée)", len(tickers),
+                 last_completed_week_end(date.today()))
+        close, volume = download_ohlcv(tickers + benchmarks, dcfg["start_date"], end, cfg)
+        missing = [t for t in tickers + benchmarks if t not in close.columns]
+        if missing:
+            raise SystemExit(f"Données indisponibles pour {missing} : mise à jour annulée, cache précédent conservé.")
+        close.to_csv(f_close)
+        volume.to_csv(f_vol)
+    elif args.refresh or not (f_tickers.exists() and f_close.exists() and f_vol.exists()):
         cands, source = build_candidates(cfg)
         log.info("%d sociétés candidates (source : %s)", len(cands), source)
         resolved = verify_and_resolve(cands, cfg)
@@ -49,7 +70,7 @@ def main() -> None:
         resolved.to_csv(f_tickers, index=False)
         tickers = resolved["yahoo_ticker"].dropna().tolist()
         log.info("%d tickers valides ; téléchargement %s -> %s", len(tickers), dcfg["start_date"], dcfg["end_date"] or "aujourd'hui")
-        close, volume = download_ohlcv(tickers + benchmarks, dcfg["start_date"], dcfg["end_date"], cfg)
+        close, volume = download_ohlcv(tickers + benchmarks, dcfg["start_date"], end, cfg)
         missing = [t for t in tickers + benchmarks if t not in close.columns]
         if any(b in missing for b in benchmarks):
             raise RuntimeError(f"Benchmark introuvable sur Yahoo Finance : {[b for b in benchmarks if b in missing]}")
@@ -88,7 +109,7 @@ def main() -> None:
     log.info("Après nettoyage : %d titres, %d jours (%d jours supprimés)", res.close.shape[1], len(res.close), res.dropped_days)
 
     train_start, train_end = cfg["split"]["train"]
-    universe = select_universe(res.close, res.volume, dcfg["n_assets"], train_start, train_end)
+    universe = select_universe(res.close, res.volume, min(dcfg["n_assets"], res.close.shape[1]), train_start, train_end)
     log.info("Univers (top %d valeur échangée, train uniquement) : %s", dcfg["n_assets"], list(universe.index))
 
     prices = add_cash(res.close[universe.index.tolist()], dcfg["cash_daily_return"], dcfg["cash_name"])
@@ -105,7 +126,7 @@ def main() -> None:
     end_eff = str(close.index.max().date()) if dcfg["end_date"] is None else dcfg["end_date"]
     write_report(out["report"], cfg, source, resolved, res, universe, prices, returns, end_eff)
 
-    ctx = download_context(cfg, refresh=args.refresh)
+    ctx = download_context(cfg, refresh=args.refresh or args.update, end=end if (args.refresh or args.update) else None)
     log.info("Contexte de marché (indice + VIX) : %s", ctx)
 
     # Point de contrôle
