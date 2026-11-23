@@ -52,6 +52,34 @@ glissante, et le jeu de test n'est évalué qu'une fois (verrou).
 - *Pire perte* = plus forte baisse entre un sommet et le creux suivant, sur toute la période (ici
   essentiellement le krach de mars 2020 en validation et la baisse de 2022 au test).
 
+## Interface interactive
+
+Ouvrir **`dashboard/index.html`** dans un navigateur (fichier autonome, aucune installation). Le carnet de bord de
+l'agent affiche, pour la **semaine en cours** par défaut ou n'importe quelle semaine depuis janvier 2022 :
+
+- un **ruban des semaines** : une barre par semaine, bleue si l'agent a fait mieux que l'ETF, rouge sinon ;
+  cliquer, glisser ou utiliser les flèches ← → du clavier pour changer de semaine ;
+- le **résultat de la semaine** : agent, ETF, écart, cumul depuis 2022, nombre de titres, cash et rotation ;
+- l'**allocation** : poids détenus, cible de l'agent ou référence max-Sharpe, avec l'évolution par rapport à la
+  semaine précédente ;
+- les **plus grands changements** (titres renforcés et allégés) et la **contribution de chaque titre** au résultat ;
+- la **performance cumulée** de l'agent, de l'ETF et des stratégies de référence (cliquer sur la courbe pour
+  choisir une semaine) et un **tableau comparatif** de la semaine.
+
+Chaque semaine a un lien direct (par exemple `dashboard/index.html#2025-04-04`). Pour la semaine en cours,
+l'allocation est celle décidée à la dernière clôture disponible ; son rendement n'est pas encore connu.
+
+![Aperçu de l'interface](dashboard/apercu.png)
+
+```bash
+.venv/Scripts/python dashboard/build_dashboard.py              # rejoue les 5 modèles et reconstruit la page (~1 min)
+.venv/Scripts/python dashboard/build_dashboard.py --html-only  # reconstruit la page à partir de dashboard/data.json
+```
+
+Le script vérifie que les rendements de l'agent sont identiques à ceux du backtest officiel
+(`results/tables/test_backtest_RL_ensemble.csv`). Après une mise à jour des données
+(`01_download_data.py --refresh`), il calcule l'allocation de la nouvelle semaine en cours.
+
 ## Méthode
 
 **Données** (`scripts/01_download_data.py`, `src/data.py`, `src/universe.py`) :

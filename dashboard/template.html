@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carnet de bord de l'agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #eef1f5; --surface: #fbfcfd; --ink: #0f1b2d; --ink2: #4a5568; --ink3: #7a8597;
+  --rule: #d9dee6; --agent: #2a78d6; --etf: #eb6834; --neg: #e34948; --neutral: #c9ced6;
+  --agent-soft: rgba(42,120,214,.12); --focus: #2a78d6;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e1621; --surface: #151f2c; --ink: #e8edf4; --ink2: #9aa6b6; --ink3: #6f7b8c;
+    --rule: #26303d; --agent: #3987e5; --etf: #d95926; --neg: #e66767; --neutral: #3a4553;
+    --agent-soft: rgba(57,135,229,.18); --focus: #6aa6ef;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1621; --surface: #151f2c; --ink: #e8edf4; --ink2: #9aa6b6; --ink3: #6f7b8c;
+  --rule: #26303d; --agent: #3987e5; --etf: #d95926; --neg: #e66767; --neutral: #3a4553;
+  --agent-soft: rgba(57,135,229,.18); --focus: #6aa6ef;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 48px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- en-tête ---------- */
+.eyebrow { font: 600 12px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin: 0 0 10px; }
+.head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; }
+h1 { font-family: var(--display); font-stretch: 125%; font-weight: 750; font-size: clamp(28px, 4.6vw, 50px); line-height: 1.02; letter-spacing: -.01em; margin: 0; }
+h1 .light { font-weight: 450; color: var(--ink2); }
+.sub { margin: 10px 0 0; color: var(--ink2); max-width: 60ch; }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--rule); background: var(--surface); border-radius: 999px; padding: 8px 14px; cursor: pointer; font-size: 14px; }
+.btn:hover { border-color: var(--ink3); }
+.btn[disabled] { opacity: .4; cursor: default; }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* ---------- ruban des semaines (élément signature) ---------- */
+.ribbon { margin: 26px 0 8px; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px 6px; }
+.ribbon-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.ribbon-title { font-family: var(--display); font-stretch: 112%; font-weight: 650; font-size: 15px; margin: 0; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+#ribbon { width: 100%; height: 118px; display: block; cursor: pointer; touch-action: none; }
+#ribbon:focus-visible { outline-offset: 4px; }
+
+/* ---------- indicateurs ---------- */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 18px 0; }
+.kpi { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; }
+.kpi .label { font-size: 12.5px; color: var(--ink2); }
+.kpi .value { font: 500 24px/1.2 var(--mono); font-variant-numeric: tabular-nums; margin-top: 4px; }
+.kpi .hint { font-size: 12.5px; color: var(--ink3); margin-top: 2px; }
+.pos { color: var(--agent); } .negc { color: var(--neg); } .muted { color: var(--ink3); }
+
+/* ---------- cartes ---------- */
+.grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; }
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 16px 18px; min-width: 0; }
+.card h2 { font-family: var(--display); font-stretch: 112%; font-weight: 650; font-size: 17px; margin: 0; }
+.card .desc { font-size: 13px; color: var(--ink2); margin: 4px 0 12px; }
+.stack { display: grid; gap: 14px; align-content: start; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 3px; gap: 2px; margin-bottom: 12px; flex-wrap: wrap; }
+.seg button { border: 0; background: none; padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: 13px; color: var(--ink2); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+/* allocation */
+.alloc { display: grid; gap: 4px; }
+.row { display: grid; grid-template-columns: minmax(110px, 1.1fr) 2fr 58px 64px; align-items: center; gap: 10px; font-size: 13.5px; padding: 3px 4px; border-radius: 6px; }
+.row:hover { background: var(--agent-soft); }
+.row .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .name small { color: var(--ink3); font-family: var(--mono); font-size: 11px; margin-left: 4px; }
+.bar { position: relative; height: 12px; }
+.bar .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--agent); border-radius: 0 4px 4px 0; transition: width .35s ease; }
+.bar .ref { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .55; border-radius: 1px; transition: left .35s ease; }
+.row.cash .fill { background: var(--ink3); }
+.row.other .fill { background: var(--neutral); }
+.row .w { text-align: right; } .row .d { text-align: right; font-size: 12.5px; }
+
+/* listes de changements */
+.moves { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.moves h3 { font: 600 12.5px var(--body); color: var(--ink2); margin: 0 0 6px; text-transform: uppercase; letter-spacing: .06em; }
+.moves ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; font-size: 13.5px; }
+.moves li { display: flex; justify-content: space-between; gap: 8px; }
+.moves li span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* graphiques */
+svg text { font-family: var(--body); fill: var(--ink2); font-size: 11.5px; }
+svg .axis line, svg .grid line { stroke: var(--rule); }
+.chart-wrap { position: relative; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.chip { border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px 3px 8px; font-size: 12.5px; background: none; cursor: pointer; color: var(--ink2); }
+.chip i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+.chip[aria-pressed="false"] { opacity: .45; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12.5px; padding: 7px 9px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); opacity: 0; transition: opacity .12s; z-index: 5; }
+.tip.show { opacity: 1; }
+.tip .num { font-size: 12px; }
+
+/* tableau */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font: 600 12px var(--body); color: var(--ink3); text-transform: uppercase; letter-spacing: .06em; padding: 0 8px 8px; }
+th.r, td.r { text-align: right; }
+td { padding: 7px 8px; border-top: 1px solid var(--rule); }
+tr.me td { background: var(--agent-soft); font-weight: 600; }
+.table-scroll { overflow-x: auto; }
+td.r { white-space: nowrap; }
+@media (max-width: 520px) {
+  table { font-size: 13px; } td, th { padding-left: 4px; padding-right: 4px; }
+  .row { grid-template-columns: minmax(92px, 1fr) 1.1fr 50px 54px; gap: 6px; font-size: 13px; }
+  .kpi .value { font-size: 20px; }
+}
+.empty { color: var(--ink2); font-size: 13.5px; padding: 18px; border: 1px dashed var(--rule); border-radius: 10px; text-align: center; }
+footer { margin-top: 28px; font-size: 12.5px; color: var(--ink3); display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Carnet de bord de l'agent · allocation dynamique par RL · Euro Stoxx 50</p>
+  <div class="head">
+    <div>
+      <h1 id="title">—</h1>
+      <p class="sub" id="subtitle"></p>
+    </div>
+    <div class="nav">
+      <button class="btn" id="prev" aria-label="Semaine précédente">‹ Semaine précédente</button>
+      <button class="btn" id="next" aria-label="Semaine suivante">Semaine suivante ›</button>
+      <button class="btn primary" id="now">Semaine en cours</button>
+    </div>
+  </div>
+
+  <section class="ribbon" aria-label="Choisir une semaine">
+    <div class="ribbon-top">
+      <p class="ribbon-title">Chaque semaine depuis janvier 2022 : l'agent face à l'ETF</p>
+      <div class="legend">
+        <span><i style="background:var(--agent)"></i>agent devant l'ETF</span>
+        <span><i style="background:var(--neg)"></i>agent derrière l'ETF</span>
+        <span><i style="background:none;border:1.5px dashed var(--ink3)"></i>semaine en cours</span>
+      </div>
+    </div>
+    <svg id="ribbon" tabindex="0" role="slider" aria-label="Semaine affichée (flèches gauche et droite pour changer)"></svg>
+  </section>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Allocation de la semaine</h2>
+      <p class="desc" id="alloc-desc"></p>
+      <div class="seg" role="group" aria-label="Poids affichés">
+        <button aria-pressed="true" data-view="w">Poids détenus</button>
+        <button aria-pressed="false" data-view="target">Cible de l'agent</button>
+        <button aria-pressed="false" data-view="base">Référence max-Sharpe</button>
+      </div>
+      <div class="alloc" id="alloc"></div>
+    </section>
+    <div class="stack">
+      <section class="card">
+        <h2>Plus grands changements</h2>
+        <p class="desc">Écart de poids avec la semaine précédente, en points de pourcentage.</p>
+        <div class="moves" id="moves"></div>
+      </section>
+      <section class="card">
+        <h2>D'où vient le résultat de la semaine</h2>
+        <p class="desc">Contribution de chaque titre : poids × rendement du titre pendant la semaine.</p>
+        <div id="contrib"></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="card" style="margin-top:14px">
+    <h2>Performance cumulée depuis janvier 2022</h2>
+    <p class="desc">Valeur de 1 € investi, nette de frais. Cliquez sur la courbe pour afficher une semaine.</p>
+    <div class="chips" id="chips"></div>
+    <div class="chart-wrap" id="perf-wrap"><svg id="perf" width="100%" height="300" role="img" aria-label="Performance cumulée"></svg><div class="tip" id="tip"></div></div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>La semaine pour toutes les stratégies</h2>
+    <p class="desc" id="table-desc"></p>
+    <div class="table-scroll"><table id="table"></table></div>
+  </section>
+
+  <footer>
+    <span id="foot-model"></span>
+    <span>Régénérer : <span class="num">python dashboard/build_dashboard.py</span></span>
+  </footer>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+(function () {
+  "use strict";
+  const W = DATA.weeks, T = DATA.tickers, NAMES = DATA.names, N = T.length, LAST = W.length - 1;
+  const BENCH = DATA.bench, ETF = "ETF Euro Stoxx 50";
+  const pct = (x, d = 2) => x == null ? "—" : new Intl.NumberFormat("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d }).format(100 * x) + " %";
+  const spct = (x, d = 2) => x == null ? "—" : (x > 0 ? "+" : x < 0 ? "−" : "") + pct(Math.abs(x), d);
+  const pts = (x) => (x > 0 ? "+" : x < 0 ? "−" : "") + new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(100 * x));
+  const cls = (x) => x == null ? "muted" : x >= 0 ? "pos" : "negc";
+  const fmtD = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const fmtDM = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" });
+  const fmtShort = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+  const day = (s) => new Date(s + "T12:00:00");
+  const nextBizDay = (d) => { const x = new Date(d); do { x.setDate(x.getDate() + 1); } while (x.getDay() === 0 || x.getDay() === 6); return x; };
+  const holdStart = (w) => nextBizDay(day(w.date));
+  const holdEnd = (w) => w.end ? day(w.end) : (() => { const x = new Date(holdStart(w)); x.setDate(x.getDate() + 4); return x; })();
+  const name = (t) => NAMES[t] || t;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // séries cumulées (base 1 au départ)
+  function cumulate(rets) { const out = [1]; rets.forEach((r) => out.push(out[out.length - 1] * (1 + (r == null ? 0 : r)))); return out; }
+  const agentRets = W.map((w) => w.ret);
+  const cum = { "Agent PPO": cumulate(agentRets) };
+  Object.keys(BENCH).forEach((k) => { cum[k] = cumulate(BENCH[k]); });
+  const excess = W.map((w, i) => w.ret == null ? null : w.ret - BENCH[ETF][i]);
+
+  let sel = LAST, view = "w";
+  const hashIdx = W.findIndex((w) => "#" + w.date === location.hash);
+  if (hashIdx >= 0) sel = hashIdx;
+
+  // ---------------------------------------------------------------- ruban
+  const rib = document.getElementById("ribbon");
+  function drawRibbon() {
+    const width = rib.clientWidth || 900, height = 118, top = 8, mid = 52, maxH = 42;
+    const n = W.length, step = width / n, bw = Math.max(1, step - (step > 3 ? 1 : 0));
+    const maxAbs = Math.max(...excess.filter((x) => x != null).map(Math.abs));
+    let s = `<line x1="0" x2="${width}" y1="${mid + top}" y2="${mid + top}" stroke="var(--rule)"/>`;
+    W.forEach((w, i) => {
+      const x = i * step;
+      if (excess[i] == null) {
+        s += `<rect x="${x}" y="${top + mid - 18}" width="${Math.max(bw, 3)}" height="36" fill="none" stroke="var(--ink3)" stroke-dasharray="3 2" rx="1"/>`;
+        return;
+      }
+      const h = Math.max(1.5, Math.sqrt(Math.abs(excess[i]) / maxAbs) * maxH);
+      const y = excess[i] >= 0 ? top + mid - h : top + mid;
+      s += `<rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${excess[i] >= 0 ? "var(--agent)" : "var(--neg)"}" opacity="${i === sel ? 1 : 0.62}" rx="${bw > 2 ? 1 : 0}"/>`;
+    });
+    const sx = sel * step + bw / 2;
+    s += `<line x1="${sx}" x2="${sx}" y1="${top - 4}" y2="${top + 2 * mid + 4}" stroke="var(--ink)" stroke-width="1.5"/>`;
+    s += `<circle cx="${sx}" cy="${top - 4}" r="4" fill="var(--ink)"/>`;
+    // repères annuels
+    let lastYear = null;
+    W.forEach((w, i) => {
+      const y = w.date.slice(0, 4);
+      if (y !== lastYear) { lastYear = y; s += `<text x="${i * step}" y="${height - 2}">${y}</text>`; }
+    });
+    rib.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    rib.innerHTML = s;
+    rib.setAttribute("aria-valuemin", 1); rib.setAttribute("aria-valuemax", W.length);
+    rib.setAttribute("aria-valuenow", sel + 1);
+    rib.setAttribute("aria-valuetext", "Semaine du " + fmtD.format(holdStart(W[sel])));
+  }
+  function ribbonIndex(evt) { const r = rib.getBoundingClientRect(); return Math.min(LAST, Math.max(0, Math.floor((evt.clientX - r.left) / r.width * W.length))); }
+  let dragging = false;
+  rib.addEventListener("pointerdown", (e) => { dragging = true; rib.setPointerCapture(e.pointerId); select(ribbonIndex(e)); });
+  rib.addEventListener("pointermove", (e) => { if (dragging) select(ribbonIndex(e)); });
+  rib.addEventListener("pointerup", () => { dragging = false; });
+  rib.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") { select(sel - 1); e.preventDefault(); }
+    if (e.key === "ArrowRight") { select(sel + 1); e.preventDefault(); }
+    if (e.key === "Home") { select(0); e.preventDefault(); }
+    if (e.key === "End") { select(LAST); e.preventDefault(); }
+  });
+
+  // ---------------------------------------------------------------- en-tête et indicateurs
+  function drawHeader() {
+    const w = W[sel], live = w.ret == null;
+    document.getElementById("title").innerHTML =
+      `Semaine du ${esc(fmtDM.format(holdStart(w)))} <span class="light">au ${esc(fmtD.format(holdEnd(w)))}</span>`;
+    document.getElementById("subtitle").textContent = live
+      ? `Semaine en cours : allocation décidée le vendredi ${fmtD.format(day(w.date))} avec les données de clôture. Son résultat sera connu à la clôture du ${fmtD.format(holdEnd(w))}.`
+      : `Allocation décidée le ${fmtD.format(day(w.date))}, détenue jusqu'au ${fmtD.format(holdEnd(w))}. Semaine ${sel + 1} sur ${W.length} de la période de test.`;
+    document.getElementById("prev").disabled = sel === 0;
+    document.getElementById("next").disabled = sel === LAST;
+    document.getElementById("now").disabled = sel === LAST;
+  }
+  function drawKpis() {
+    const w = W[sel], live = w.ret == null;
+    const upTo = live ? sel : sel + 1;  // valeur cumulée en fin de semaine (ou à la décision si semaine en cours)
+    const ca = cum["Agent PPO"][upTo] - 1, ce = cum[ETF][upTo] - 1;
+    const held = w.w.slice(0, N).filter((x) => x > 0.005).length;
+    const k = [
+      { label: "Agent cette semaine", value: live ? "en cours" : spct(w.ret), c: live ? "muted" : cls(w.ret), hint: live ? "rendement connu en fin de semaine" : "net de frais" },
+      { label: "ETF Euro Stoxx 50", value: live ? "en cours" : spct(BENCH[ETF][sel]), c: live ? "muted" : cls(BENCH[ETF][sel]), hint: "même semaine, dividendes inclus" },
+      { label: "Écart avec l'ETF", value: live ? "—" : pts(excess[sel]) + " pts", c: live ? "muted" : cls(excess[sel]), hint: live ? "" : excess[sel] >= 0 ? "agent devant" : "agent derrière" },
+      { label: live ? "Cumul jusqu'à cette décision" : "Cumul fin de semaine", value: spct(ca, 1), c: cls(ca), hint: `ETF : ${spct(ce, 1)}` },
+      { label: "Portefeuille", value: `${held} titres`, c: "", hint: `cash ${pct(w.w[N], 1)} · rotation ${pct(w.turnover, 1)}` },
+    ];
+    document.getElementById("kpis").innerHTML = k.map((x) =>
+      `<div class="kpi"><div class="label">${x.label}</div><div class="value ${x.c}">${x.value}</div><div class="hint">${x.hint}</div></div>`).join("");
+  }
+
+  // ---------------------------------------------------------------- allocation
+  function drawAlloc() {
+    const w = W[sel], prev = sel > 0 ? W[sel - 1] : null;
+    const vec = view === "base" ? w.base.concat([0]) : w[view];
+    const idx = [...Array(N).keys()].filter((i) => w.avail[i]).sort((a, b) => vec[b] - vec[a]);
+    const top = idx.slice(0, 15), rest = idx.slice(15);
+    const others = rest.reduce((s, i) => s + vec[i], 0);
+    const max = Math.max(...top.map((i) => vec[i]), vec[N], others, 0.01);
+    const descs = {
+      w: "Poids réellement détenus après exécution (l'agent ne fait que la moitié du chemin vers sa cible chaque semaine, pour limiter les frais).",
+      target: "Poids visés par l'agent cette semaine, avant lissage. Le trait vertical indique la référence max-Sharpe.",
+      base: "Portefeuille de référence max-Sharpe recalculé chaque mois : le point de départ que l'agent ajuste.",
+    };
+    document.getElementById("alloc-desc").textContent = descs[view];
+    const delta = (i) => prev ? (view === "base" ? w.base[i] - prev.base[i] : w[view][i] - prev[view][i]) : null;
+    const row = (label, small, v, d, ref, kind) =>
+      `<div class="row ${kind || ""}" title="${esc(label)} : ${pct(v)}${d == null ? "" : " (" + pts(d) + " pts vs semaine précédente)"}">
+        <div class="name">${esc(label)}${small ? `<small>${esc(small)}</small>` : ""}</div>
+        <div class="bar"><div class="fill" style="width:${(v / max * 100).toFixed(2)}%"></div>${ref == null ? "" : `<div class="ref" style="left:calc(${(ref / max * 100).toFixed(2)}% - 1px)"></div>`}</div>
+        <div class="w num">${pct(v, 1)}</div>
+        <div class="d num ${d == null || Math.abs(d) < 0.0005 ? "muted" : d > 0 ? "pos" : "negc"}">${d == null ? "" : Math.abs(d) < 0.0005 ? "=" : (d > 0 ? "▲ " : "▼ ") + pts(Math.abs(d)).replace(/^[+−]/, "")}</div>
+      </div>`;
+    let html = top.map((i) => row(name(T[i]), T[i], vec[i], delta(i), view === "base" ? null : w.base[i])).join("");
+    if (rest.length) html += row(`Autres titres (${rest.length})`, "", others, prev ? others - rest.reduce((s, i) => s + (view === "base" ? prev.base[i] : prev[view][i]), 0) : null, null, "other");
+    if (view !== "base") html += row("Cash", "", vec[N], prev ? vec[N] - prev[view][N] : null, null, "cash");
+    document.getElementById("alloc").innerHTML = html;
+  }
+
+  // ---------------------------------------------------------------- changements et contributions
+  function drawMoves() {
+    const el = document.getElementById("moves");
+    if (sel === 0) { el.innerHTML = `<div class="empty" style="grid-column:1/-1">Première semaine de la période de test : pas de semaine précédente à comparer.</div>`; return; }
+    const w = W[sel].w, p = W[sel - 1].w;
+    const d = [...Array(N + 1).keys()].map((i) => ({ i, d: w[i] - p[i] }));
+    const lab = (i) => i === N ? "Cash" : name(T[i]);
+    const up = d.filter((x) => x.d > 0.0005).sort((a, b) => b.d - a.d).slice(0, 5);
+    const dn = d.filter((x) => x.d < -0.0005).sort((a, b) => a.d - b.d).slice(0, 5);
+    const li = (x) => `<li><span>${esc(lab(x.i))}</span><span class="num ${x.d > 0 ? "pos" : "negc"}">${pts(x.d)}</span></li>`;
+    el.innerHTML = `<div><h3>Renforcés</h3><ol>${up.map(li).join("") || '<li class="muted">aucun</li>'}</ol></div>
+                    <div><h3>Allégés</h3><ol>${dn.map(li).join("") || '<li class="muted">aucun</li>'}</ol></div>`;
+  }
+  function drawContrib() {
+    const el = document.getElementById("contrib"), w = W[sel];
+    if (w.R == null) { el.innerHTML = `<div class="empty">Disponible à la clôture du ${esc(fmtD.format(holdEnd(w)))}, une fois la semaine écoulée.</div>`; return; }
+    const c = [...Array(N).keys()].map((i) => ({ i, c: w.w[i] * w.R[i], r: w.R[i] })).filter((x) => Math.abs(x.c) > 1e-7);
+    const pos = c.filter((x) => x.c > 0).sort((a, b) => b.c - a.c).slice(0, 4);
+    const neg = c.filter((x) => x.c < 0).sort((a, b) => a.c - b.c).slice(0, 4);
+    const list = pos.concat(neg.reverse());
+    const max = Math.max(...list.map((x) => Math.abs(x.c)), 1e-6);
+    const width = 400, rowH = 22, labelW = 150, mid = labelW + (width - labelW - 70) / 2, half = (width - labelW - 70) / 2;
+    let s = `<line x1="${mid}" x2="${mid}" y1="0" y2="${list.length * rowH}" stroke="var(--rule)"/>`;
+    list.forEach((x, k) => {
+      const len = Math.abs(x.c) / max * half, y = k * rowH;
+      s += `<text x="0" y="${y + 15}">${esc(name(T[x.i]).slice(0, 22))}</text>`;
+      s += `<rect x="${x.c >= 0 ? mid : mid - len}" y="${y + 5}" width="${Math.max(len, 1)}" height="12" rx="2" fill="${x.c >= 0 ? "var(--agent)" : "var(--neg)"}"><title>${esc(name(T[x.i]))} : poids ${pct(w.w[x.i], 1)} × rendement ${spct(x.r)} = ${pts(x.c)} pt</title></rect>`;
+      s += `<text x="${width}" y="${y + 15}" text-anchor="end" class="num">${pts(x.c)}</text>`;
+    });
+    el.innerHTML = `<svg viewBox="0 0 ${width} ${list.length * rowH}" width="100%" role="img" aria-label="Contributions des titres">${s}</svg>
+      <p class="desc" style="margin:8px 0 0">Total avant frais : <span class="num ${cls(w.gross)}">${spct(w.gross)}</span> · frais : <span class="num">${pct(w.gross - w.ret, 3)}</span> · net : <span class="num ${cls(w.ret)}">${spct(w.ret)}</span></p>`;
+  }
+
+  // ---------------------------------------------------------------- performance cumulée
+  const COLORS = { "Agent PPO": "var(--agent)", [ETF]: "var(--etf)", "1/N (50 titres)": "#1baf7a", "Max-Sharpe": "#e87ba4", "Variance minimale": "#eda100", "Faible volatilité": "#4a3aa7", "Momentum 12-1": "#008300", "Parité de risque": "#7a8597", "Indice (prix)": "#b4b3ad" };
+  const shown = new Set(["Agent PPO", ETF, "1/N (50 titres)", "Max-Sharpe"]);
+  const chips = document.getElementById("chips");
+  chips.innerHTML = Object.keys(cum).map((k) => `<button class="chip" aria-pressed="${shown.has(k)}" data-k="${esc(k)}"><i style="background:${COLORS[k]}"></i>${esc(k)}</button>`).join("");
+  chips.addEventListener("click", (e) => {
+    const b = e.target.closest(".chip"); if (!b || b.dataset.k === "Agent PPO") return;
+    shown.has(b.dataset.k) ? shown.delete(b.dataset.k) : shown.add(b.dataset.k);
+    b.setAttribute("aria-pressed", shown.has(b.dataset.k)); drawPerf();
+  });
+  const perf = document.getElementById("perf"), tip = document.getElementById("tip");
+  let geo = null;
+  function drawPerf() {
+    const width = perf.clientWidth || 900, height = 300, m = { l: 44, r: 92, t: 10, b: 26 };
+    const n = W.length;  // points 0..n-1 = valeur à chaque décision ; dernier point = début de la semaine en cours
+    const keys = [...shown];
+    const vals = keys.flatMap((k) => cum[k].slice(0, n));
+    const ymin = Math.min(...vals) * 0.97, ymax = Math.max(...vals) * 1.02;
+    const X = (i) => m.l + i / (n - 1) * (width - m.l - m.r), Y = (v) => m.t + (1 - (v - ymin) / (ymax - ymin)) * (height - m.t - m.b);
+    let s = "";
+    const ticks = 5;
+    for (let t = 0; t <= ticks; t++) {
+      const v = ymin + (ymax - ymin) * t / ticks;
+      s += `<line x1="${m.l}" x2="${width - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${v.toFixed(2).replace(".", ",")}</text>`;
+    }
+    let lastYear = null;
+    W.forEach((w, i) => { const y = w.date.slice(0, 4); if (y !== lastYear) { lastYear = y; s += `<text x="${X(i)}" y="${height - 6}">${y}</text>`; } });
+    keys.sort((a, b) => (a === "Agent PPO") - (b === "Agent PPO")).forEach((k) => {
+      const d = cum[k].slice(0, n).map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+      s += `<path d="${d}" fill="none" stroke="${COLORS[k]}" stroke-width="${k === "Agent PPO" ? 2.4 : 1.4}" stroke-linejoin="round"/>`;
+      const last = cum[k][n - 1];
+      if (k === "Agent PPO" || k === ETF) s += `<text x="${X(n - 1) + 8}" y="${Y(last) + 4}" style="fill:${COLORS[k]};font-weight:600">${k === ETF ? "ETF" : "Agent"} ${last.toFixed(2).replace(".", ",")} €</text>`;
+    });
+    const sx = X(sel);
+    s += `<line x1="${sx}" x2="${sx}" y1="${m.t}" y2="${height - m.b}" stroke="var(--ink)" stroke-dasharray="4 3"/>`;
+    s += `<circle cx="${sx}" cy="${Y(cum["Agent PPO"][sel])}" r="4.5" fill="var(--agent)" stroke="var(--surface)" stroke-width="2"/>`;
+    s += `<line id="cross" x1="0" x2="0" y1="${m.t}" y2="${height - m.b}" stroke="var(--ink3)" visibility="hidden"/>`;
+    perf.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    perf.innerHTML = s;
+    geo = { X, width, m, n };
+  }
+  function perfIndex(e) { const r = perf.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * geo.width; return Math.min(geo.n - 1, Math.max(0, Math.round((x - geo.m.l) / (geo.width - geo.m.l - geo.m.r) * (geo.n - 1)))); }
+  perf.addEventListener("pointermove", (e) => {
+    if (!geo) return;
+    const i = perfIndex(e), cross = perf.querySelector("#cross"), r = perf.getBoundingClientRect();
+    cross.setAttribute("x1", geo.X(i)); cross.setAttribute("x2", geo.X(i)); cross.setAttribute("visibility", "visible");
+    const lines = [...shown].map((k) => `<div><span style="color:${COLORS[k]}">●</span> ${esc(k)} <span class="num">${cum[k][i].toFixed(3).replace(".", ",")} €</span></div>`).join("");
+    tip.innerHTML = `<div style="opacity:.75;margin-bottom:3px">${esc(fmtShort.format(day(W[i].date)))}</div>${lines}`;
+    tip.style.left = (geo.X(i) / geo.width * r.width) + "px"; tip.style.top = "40px"; tip.classList.add("show");
+  });
+  perf.addEventListener("pointerleave", () => { tip.classList.remove("show"); const c = perf.querySelector("#cross"); if (c) c.setAttribute("visibility", "hidden"); });
+  perf.addEventListener("click", (e) => { if (geo) select(perfIndex(e)); });
+
+  // ---------------------------------------------------------------- tableau
+  function drawTable() {
+    const w = W[sel], live = w.ret == null, upTo = live ? sel : sel + 1;
+    document.getElementById("table-desc").textContent = live
+      ? "Semaine en cours : seuls les cumuls jusqu'à la décision sont connus."
+      : "Rendement net de la semaine et cumul depuis janvier 2022, pour l'agent et chaque stratégie de référence.";
+    const rows = Object.keys(cum).map((k) => ({ k, r: k === "Agent PPO" ? w.ret : BENCH[k][sel], c: cum[k][upTo] - 1 }));
+    rows.sort((a, b) => live ? b.c - a.c : b.r - a.r);
+    document.getElementById("table").innerHTML =
+      `<thead><tr><th>Stratégie</th><th class="r">Cette semaine</th><th class="r">Avance de l'agent</th><th class="r">Cumul depuis 2022</th></tr></thead><tbody>` +
+      rows.map((x) => `<tr class="${x.k === "Agent PPO" ? "me" : ""}"><td><span style="color:${COLORS[x.k]}">●</span> ${esc(x.k)}</td>
+        <td class="r num ${cls(x.r)}">${spct(x.r)}</td>
+        <td class="r num ${x.k === "Agent PPO" || x.r == null ? "muted" : cls(w.ret - x.r)}">${x.k === "Agent PPO" || x.r == null ? "" : pts(w.ret - x.r) + " pts"}</td>
+        <td class="r num ${cls(x.c)}">${spct(x.c, 1)}</td></tr>`).join("") + "</tbody>";
+  }
+
+  // ---------------------------------------------------------------- sélection
+  function select(i) {
+    i = Math.max(0, Math.min(LAST, i));
+    if (i === sel && document.getElementById("title").textContent !== "—") return;
+    sel = i;
+    history.replaceState(null, "", "#" + W[sel].date);
+    render();
+  }
+  function render() { drawHeader(); drawRibbon(); drawKpis(); drawAlloc(); drawMoves(); drawContrib(); drawPerf(); drawTable(); }
+  document.getElementById("prev").onclick = () => select(sel - 1);
+  document.getElementById("next").onclick = () => select(sel + 1);
+  document.getElementById("now").onclick = () => select(LAST);
+  document.querySelector(".seg").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    view = b.dataset.view;
+    document.querySelectorAll(".seg button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    drawAlloc();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.target.closest("input, textarea") || e.target === rib) return;
+    if (e.key === "ArrowLeft") select(sel - 1);
+    if (e.key === "ArrowRight") select(sel + 1);
+  });
+  window.addEventListener("hashchange", () => { const i = W.findIndex((w) => "#" + w.date === location.hash); if (i >= 0) select(i); });
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { drawRibbon(); drawPerf(); }, 120); });
+  document.getElementById("foot-model").textContent = `${DATA.model} · frais ${pct(DATA.cost, 1)} par unité échangée · données générées le ${DATA.generated}`;
+  render();
+})();
+</script>
+</body>
+</html>
