@@ -1,0 +1,51 @@
+name,candidates,yahoo_ticker,failed,source
+Adidas,ADS.DE,ADS.DE,,wikipedia
+Adyen,ADYEN.AS,ADYEN.AS,,wikipedia
+Ahold Delhaize,AD.AS,AD.AS,,wikipedia
+Air Liquide,AI.PA,AI.PA,,wikipedia
+Airbus,AIR.PA,AIR.PA,,wikipedia
+Allianz,ALV.DE,ALV.DE,,wikipedia
+Anheuser-Busch InBev,ABI.BR,ABI.BR,,wikipedia
+Argenx,ARGX.BR,ARGX.BR,,wikipedia
+ASML Holding,ASML.AS,ASML.AS,,wikipedia
+Axa,CS.PA,CS.PA,,wikipedia
+BASF,BAS.DE,BAS.DE,,wikipedia
+Bayer,BAYN.DE,BAYN.DE,,wikipedia
+BBVA,BBVA.MC,BBVA.MC,,wikipedia
+Banco Santander,SAN.MC,SAN.MC,,wikipedia
+BMW,BMW.DE,BMW.DE,,wikipedia
+BNP Paribas,BNP.PA,BNP.PA,,wikipedia
+Danone,BN.PA,BN.PA,,wikipedia
+Deutsche Bank,DBK.DE,DBK.DE,,wikipedia
+Deutsche Börse,DB1.DE,DB1.DE,,wikipedia
+Deutsche Post,DHL.DE,DHL.DE,,wikipedia
+Deutsche Telekom,DTE.DE,DTE.DE,,wikipedia
+Enel,ENEL.MI,ENEL.MI,,wikipedia
+Engie,ENGI.PA,ENGI.PA,,wikipedia
+Eni,ENI.MI,ENI.MI,,wikipedia
+EssilorLuxottica,EL.PA,EL.PA,,wikipedia
+Ferrari,RACE.MI,RACE.MI,,wikipedia
+Hermès,RMS.PA,RMS.PA,,wikipedia
+Iberdrola,IBE.MC,IBE.MC,,wikipedia
+Inditex,ITX.MC,ITX.MC,,wikipedia
+Infineon Technologies,IFX.DE,IFX.DE,,wikipedia
+ING Group,INGA.AS,INGA.AS,,wikipedia
+Intesa Sanpaolo,ISP.MI,ISP.MI,,wikipedia
+L'Oréal,OR.PA,OR.PA,,wikipedia
+LVMH Moët Hennessy Louis Vuitton,MC.PA,MC.PA,,wikipedia
+Mercedes-Benz Group,MBG.DE,MBG.DE,,wikipedia
+Munich Re,MUV2.DE,MUV2.DE,,wikipedia
+Nokia,NOKIA.HE,NOKIA.HE,,wikipedia
+Nordea,NDA-FI.HE,NDA-FI.HE,,wikipedia
+Prosus,PRX.AS,PRX.AS,,wikipedia
+Rheinmetall,RHM.DE,RHM.DE,,wikipedia
+Safran,SAF.PA,SAF.PA,,wikipedia
+Saint-Gobain,SGO.PA,SGO.PA,,wikipedia
+Sanofi,SAN.PA,SAN.PA,,wikipedia
+SAP,SAP.DE,SAP.DE,,wikipedia
+Schneider Electric,SU.PA,SU.PA,,wikipedia
+Siemens,SIE.DE,SIE.DE,,wikipedia
+Siemens Energy,ENR.DE,ENR.DE,,wikipedia
+TotalEnergies,TTE.PA,TTE.PA,,wikipedia
+Vinci SA,DG.PA,DG.PA,,wikipedia
+UniCredit,UCG.MI,UCG.MI,,wikipedia

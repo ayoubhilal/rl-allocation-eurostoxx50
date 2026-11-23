@@ -1,0 +1,193 @@
+config,fold,strategy,sharpe
+base,0,base · RL_ensemble,0.6805073779164449
+base,0,base · RL seed_0,0.7001607910588069
+base,0,base · RL seed_1,0.6829041269029085
+base,0,base · RL seed_2,0.6543044658507234
+base,0,base · Action nulle (non entraîné),0.6958852109268123
+base,0,BuyHold_STOXX50E,0.27383974089789104
+base,0,BuyHold_EXW1,0.4747383711692898
+base,0,EqualWeight_1N,0.6964071243804426
+base,0,MinVariance,1.212364464064098
+base,0,MaxSharpe,0.7788814523714851
+base,0,RiskParity,0.760605501637676
+base,0,Momentum_12_1,0.5525761833913043
+base,0,LowVol,1.1567303285679549
+base,1,base · RL_ensemble,1.179802412948142
+base,1,base · RL seed_0,1.1715378787909632
+base,1,base · RL seed_1,1.178364738655322
+base,1,base · RL seed_2,1.1867393024001383
+base,1,base · Action nulle (non entraîné),1.1845860247318434
+base,1,BuyHold_STOXX50E,0.5557674268596331
+base,1,BuyHold_EXW1,0.7932562560248329
+base,1,EqualWeight_1N,1.181817343841641
+base,1,MinVariance,1.115943307411319
+base,1,MaxSharpe,1.3491638574460851
+base,1,RiskParity,1.2631852143327318
+base,1,Momentum_12_1,1.3156943018909102
+base,1,LowVol,0.7931434604642921
+base,2,base · RL_ensemble,0.6342726335957589
+base,2,base · RL seed_0,0.6304710357809606
+base,2,base · RL seed_1,0.6388507443294936
+base,2,base · RL seed_2,0.6316523314052493
+base,2,base · Action nulle (non entraîné),0.6310960832162867
+base,2,BuyHold_STOXX50E,0.24093443620956911
+base,2,BuyHold_EXW1,0.4844581406021933
+base,2,EqualWeight_1N,0.6280931782123951
+base,2,MinVariance,1.4469126998646267
+base,2,MaxSharpe,1.3561860242438781
+base,2,RiskParity,0.8011215008087291
+base,2,Momentum_12_1,1.0246782704403177
+base,2,LowVol,0.9805426602913438
+base,3,base · RL_ensemble,0.6411283784141343
+base,3,base · RL seed_0,0.6421708181021691
+base,3,base · RL seed_1,0.6392631376470803
+base,3,base · RL seed_2,0.6402325960757833
+base,3,base · Action nulle (non entraîné),0.6362823635980577
+base,3,BuyHold_STOXX50E,0.38369032415272325
+base,3,BuyHold_EXW1,0.4711152447130017
+base,3,EqualWeight_1N,0.6369538690666153
+base,3,MinVariance,0.5818151169022048
+base,3,MaxSharpe,1.0512695983521059
+base,3,RiskParity,0.6235609795907187
+base,3,Momentum_12_1,0.737028603828463
+base,3,LowVol,0.5243848922027009
+tilt_fort,0,tilt_fort · RL_ensemble,0.6828493448004094
+tilt_fort,0,tilt_fort · RL seed_0,0.7091199210143129
+tilt_fort,0,tilt_fort · RL seed_1,0.6765092556879321
+tilt_fort,0,tilt_fort · RL seed_2,0.6557910389536526
+tilt_fort,0,tilt_fort · Action nulle (non entraîné),0.6958852109268123
+tilt_fort,1,tilt_fort · RL_ensemble,1.1764518659313088
+tilt_fort,1,tilt_fort · RL seed_0,1.1573762896909994
+tilt_fort,1,tilt_fort · RL seed_1,1.173997612091664
+tilt_fort,1,tilt_fort · RL seed_2,1.1904344947218872
+tilt_fort,1,tilt_fort · Action nulle (non entraîné),1.1845860247318434
+tilt_fort,2,tilt_fort · RL_ensemble,0.6376070347237092
+tilt_fort,2,tilt_fort · RL seed_0,0.6260677800241323
+tilt_fort,2,tilt_fort · RL seed_1,0.647859766507717
+tilt_fort,2,tilt_fort · RL seed_2,0.6344694408599006
+tilt_fort,2,tilt_fort · Action nulle (non entraîné),0.6310960832162867
+tilt_fort,3,tilt_fort · RL_ensemble,0.6464620773734203
+tilt_fort,3,tilt_fort · RL seed_0,0.6447512482844221
+tilt_fort,3,tilt_fort · RL seed_1,0.6469482136079344
+tilt_fort,3,tilt_fort · RL seed_2,0.6428265542545482
+tilt_fort,3,tilt_fort · Action nulle (non entraîné),0.6362823635980577
+non_myope,0,non_myope · RL_ensemble,0.6877955735590142
+non_myope,0,non_myope · RL seed_0,0.7020629453009558
+non_myope,0,non_myope · RL seed_1,0.6795736016100731
+non_myope,0,non_myope · RL seed_2,0.67790679710072
+non_myope,0,non_myope · Action nulle (non entraîné),0.6958852109268123
+non_myope,1,non_myope · RL_ensemble,1.1743064543089532
+non_myope,1,non_myope · RL seed_0,1.1777376053602373
+non_myope,1,non_myope · RL seed_1,1.1613504849587553
+non_myope,1,non_myope · RL seed_2,1.181291762546438
+non_myope,1,non_myope · Action nulle (non entraîné),1.1845860247318434
+non_myope,2,non_myope · RL_ensemble,0.6338507275076645
+non_myope,2,non_myope · RL seed_0,0.6347404635995667
+non_myope,2,non_myope · RL seed_1,0.6294442075922289
+non_myope,2,non_myope · RL seed_2,0.6366596917277266
+non_myope,2,non_myope · Action nulle (non entraîné),0.6310960832162867
+non_myope,3,non_myope · RL_ensemble,0.6383978714516738
+non_myope,3,non_myope · RL seed_0,0.636038893103356
+non_myope,3,non_myope · RL seed_1,0.639960280387037
+non_myope,3,non_myope · RL seed_2,0.6383357761492325
+non_myope,3,non_myope · Action nulle (non entraîné),0.6362823635980577
+mensuel,0,mensuel · RL_ensemble,0.8602483496120454
+mensuel,0,mensuel · RL seed_0,0.8652172083965185
+mensuel,0,mensuel · RL seed_1,0.8444739310393381
+mensuel,0,mensuel · RL seed_2,0.8698685678676117
+mensuel,0,mensuel · Action nulle (non entraîné),0.877989382721995
+mensuel,1,mensuel · RL_ensemble,1.5850970304419987
+mensuel,1,mensuel · RL seed_0,1.5920120854804185
+mensuel,1,mensuel · RL seed_1,1.588068069772304
+mensuel,1,mensuel · RL seed_2,1.574120896665395
+mensuel,1,mensuel · Action nulle (non entraîné),1.5921430073875906
+mensuel,2,mensuel · RL_ensemble,0.5810050095072691
+mensuel,2,mensuel · RL seed_0,0.5834819412236105
+mensuel,2,mensuel · RL seed_1,0.5828919085927442
+mensuel,2,mensuel · RL seed_2,0.5761733841135465
+mensuel,2,mensuel · Action nulle (non entraîné),0.5754952105632657
+mensuel,3,mensuel · RL_ensemble,0.7351243375362616
+mensuel,3,mensuel · RL seed_0,0.7358670572650554
+mensuel,3,mensuel · RL seed_1,0.7327635091002102
+mensuel,3,mensuel · RL seed_2,0.7365969909629181
+mensuel,3,mensuel · Action nulle (non entraîné),0.735710998079467
+sans_cash,0,sans_cash · RL_ensemble,0.6982836899651984
+sans_cash,0,sans_cash · RL seed_0,0.7051278767144797
+sans_cash,0,sans_cash · RL seed_1,0.695288832275316
+sans_cash,0,sans_cash · RL seed_2,0.6928420872640977
+sans_cash,0,sans_cash · Action nulle (non entraîné),0.6958852109268123
+sans_cash,1,sans_cash · RL_ensemble,1.1828023634963303
+sans_cash,1,sans_cash · RL seed_0,1.17294457682417
+sans_cash,1,sans_cash · RL seed_1,1.181671209176876
+sans_cash,1,sans_cash · RL seed_2,1.191370982218101
+sans_cash,1,sans_cash · Action nulle (non entraîné),1.1845860247318434
+sans_cash,2,sans_cash · RL_ensemble,0.636880339387536
+sans_cash,2,sans_cash · RL seed_0,0.6352747256348105
+sans_cash,2,sans_cash · RL seed_1,0.6410657579180637
+sans_cash,2,sans_cash · RL seed_2,0.6324485056928456
+sans_cash,2,sans_cash · Action nulle (non entraîné),0.6310960832162867
+sans_cash,3,sans_cash · RL_ensemble,0.6371891523233625
+sans_cash,3,sans_cash · RL seed_0,0.6347460459721616
+sans_cash,3,sans_cash · RL seed_1,0.6374777751289463
+sans_cash,3,sans_cash · RL seed_2,0.6373691213278041
+sans_cash,3,sans_cash · Action nulle (non entraîné),0.6362823635980577
+rendement_pur,0,rendement_pur · RL_ensemble,0.6887463450368342
+rendement_pur,0,rendement_pur · RL seed_0,0.703106339346542
+rendement_pur,0,rendement_pur · RL seed_1,0.6927479404767478
+rendement_pur,0,rendement_pur · RL seed_2,0.6675453811751993
+rendement_pur,0,rendement_pur · Action nulle (non entraîné),0.6958852109268123
+rendement_pur,1,rendement_pur · RL_ensemble,1.1813518281013395
+rendement_pur,1,rendement_pur · RL seed_0,1.1715477816946995
+rendement_pur,1,rendement_pur · RL seed_1,1.1794364336844558
+rendement_pur,1,rendement_pur · RL seed_2,1.1904984235452
+rendement_pur,1,rendement_pur · Action nulle (non entraîné),1.1845860247318434
+rendement_pur,2,rendement_pur · RL_ensemble,0.6363091665825743
+rendement_pur,2,rendement_pur · RL seed_0,0.6346128751239339
+rendement_pur,2,rendement_pur · RL seed_1,0.6404837430093275
+rendement_pur,2,rendement_pur · RL seed_2,0.6320386365736218
+rendement_pur,2,rendement_pur · Action nulle (non entraîné),0.6310960832162867
+rendement_pur,3,rendement_pur · RL_ensemble,0.6378080491216992
+rendement_pur,3,rendement_pur · RL seed_0,0.6367165727065353
+rendement_pur,3,rendement_pur · RL seed_1,0.6372755365752828
+rendement_pur,3,rendement_pur · RL seed_2,0.6377297167242324
+rendement_pur,3,rendement_pur · Action nulle (non entraîné),0.6362823635980577
+autour_maxsharpe,0,autour_maxsharpe · RL_ensemble,0.805494591626885
+autour_maxsharpe,0,autour_maxsharpe · RL seed_0,0.8333348617876943
+autour_maxsharpe,0,autour_maxsharpe · RL seed_1,0.8235193497156469
+autour_maxsharpe,0,autour_maxsharpe · RL seed_2,0.756256354442112
+autour_maxsharpe,0,autour_maxsharpe · Action nulle (non entraîné),0.8233640411407142
+autour_maxsharpe,1,autour_maxsharpe · RL_ensemble,1.3390983344175211
+autour_maxsharpe,1,autour_maxsharpe · RL seed_0,1.326909984670604
+autour_maxsharpe,1,autour_maxsharpe · RL seed_1,1.3428127100749419
+autour_maxsharpe,1,autour_maxsharpe · RL seed_2,1.345287017074357
+autour_maxsharpe,1,autour_maxsharpe · Action nulle (non entraîné),1.3395807116408585
+autour_maxsharpe,2,autour_maxsharpe · RL_ensemble,1.3017467024560945
+autour_maxsharpe,2,autour_maxsharpe · RL seed_0,1.3102503038110558
+autour_maxsharpe,2,autour_maxsharpe · RL seed_1,1.2783939112148754
+autour_maxsharpe,2,autour_maxsharpe · RL seed_2,1.3148258791683451
+autour_maxsharpe,2,autour_maxsharpe · Action nulle (non entraîné),1.3100684515535446
+autour_maxsharpe,3,autour_maxsharpe · RL_ensemble,0.967862286858641
+autour_maxsharpe,3,autour_maxsharpe · RL seed_0,0.9575168896214911
+autour_maxsharpe,3,autour_maxsharpe · RL seed_1,0.9740934109496439
+autour_maxsharpe,3,autour_maxsharpe · RL seed_2,0.970226343322424
+autour_maxsharpe,3,autour_maxsharpe · Action nulle (non entraîné),0.9710121179902114
+autour_minvar,0,autour_minvar · RL_ensemble,1.2106241335462724
+autour_minvar,0,autour_minvar · RL seed_0,1.231158763493376
+autour_minvar,0,autour_minvar · RL seed_1,1.2058227234913987
+autour_minvar,0,autour_minvar · RL seed_2,1.1932053350021374
+autour_minvar,0,autour_minvar · Action nulle (non entraîné),1.2149969002123675
+autour_minvar,1,autour_minvar · RL_ensemble,1.1077406554883344
+autour_minvar,1,autour_minvar · RL seed_0,1.1039990563605697
+autour_minvar,1,autour_minvar · RL seed_1,1.1146398407532017
+autour_minvar,1,autour_minvar · RL seed_2,1.1036543976785913
+autour_minvar,1,autour_minvar · Action nulle (non entraîné),1.1024032025690922
+autour_minvar,2,autour_minvar · RL_ensemble,1.376277358261817
+autour_minvar,2,autour_minvar · RL seed_0,1.3828521941539118
+autour_minvar,2,autour_minvar · RL seed_1,1.3674600994589032
+autour_minvar,2,autour_minvar · RL seed_2,1.376582527979684
+autour_minvar,2,autour_minvar · Action nulle (non entraîné),1.3711386247130637
+autour_minvar,3,autour_minvar · RL_ensemble,0.5762169099666927
+autour_minvar,3,autour_minvar · RL seed_0,0.5741781334326389
+autour_minvar,3,autour_minvar · RL seed_1,0.575446057332356
+autour_minvar,3,autour_minvar · RL seed_2,0.5775518944039172
+autour_minvar,3,autour_minvar · Action nulle (non entraîné),0.5796451691937786

@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+results/tensorboard/
+results/logs/
+.pytest_cache/
+.ipynb_checkpoints/
+# compilation LaTeX et archive Overleaf (régénérable : python report/check_and_pack.py)
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.synctex.gz
+report/rapport_overleaf.zip

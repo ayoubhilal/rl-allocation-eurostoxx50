@@ -1,0 +1,174 @@
+# =====================================================================
+# Allocation dynamique de portefeuille par RL (PPO) - Euro Stoxx 50
+# Les 50 constituants (univers dynamique), signaux cross-sectionnels documentés + contexte de marché,
+# réseau partagé entre titres, inclinaisons autour du portefeuille max-Sharpe, gestion du cash.
+# Tous les paramètres du projet sont ici : rien n'est codé en dur dans src/.
+# =====================================================================
+
+seed: 42
+
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  fallback_tickers: data/tickers_fallback.csv
+  tables_dir: results/tables
+  figures_dir: results/figures
+  models_dir: results/models
+  tensorboard_dir: results/tensorboard
+  logs_dir: results/logs
+
+logging:
+  level: INFO
+
+data:
+  wikipedia_url: https://en.wikipedia.org/wiki/EURO_STOXX_50
+  user_agent: "Mozilla/5.0 (rl-portfolio-eurostoxx50 research project)"
+  http_timeout: 30
+  # Place de cotation (texte de la colonne "Main listing") -> suffixe Yahoo
+  exchange_suffix:
+    "Euronext Paris": ".PA"
+    "FWB": ".DE"
+    "XETRA": ".DE"
+    "Euronext Amsterdam": ".AS"
+    "BIT": ".MI"
+    "Borsa Italiana": ".MI"
+    "Euronext Milan": ".MI"
+    "BMAD": ".MC"
+    "BME": ".MC"
+    "Nasdaq Helsinki": ".HE"
+    "Euronext Brussels": ".BR"
+    "Euronext Dublin": ".IR"
+    "ISE": ".IR"
+    "Euronext Lisbon": ".LS"
+  start_date: "2009-01-01"      # 2009 = warm-up des indicateurs
+  end_date: null                # null = aujourd'hui (date effective écrite dans report.md)
+  benchmark: "^STOXX50E"
+  benchmark_total_return: "EXW1.DE"
+  verify_period: "1mo"          # historique court utilisé pour vérifier chaque ticker
+  download_retries: 3
+  coverage_tolerance_days: 10   # 1re cotation tolérée jusqu'à J+10 après start_date
+  max_missing_frac: 0.02        # titre retiré si > 2 % de valeurs manquantes (après sa 1re cotation)
+  max_ffill_days: 3
+  n_assets: 50                  # tous les constituants actuels (entrées progressives selon l'historique)
+  cash_daily_return: 0.0
+  cash_name: CASH
+
+split:                          # utilisé par le modèle final ; la validation glissante remplace train/validation
+  train: ["2010-01-01", "2019-12-31"]
+  validation: ["2020-01-01", "2021-12-31"]
+  test: ["2022-01-01", null]
+
+features:
+  type: dynamic_universe      # univers dynamique (titres investissables après 1 an de cotation)
+  rank_signals: [mom_12_1, mom_6_1, rev_1m, ret_1w, vol, drawdown]  # rangs parmi les titres disponibles
+  level_signals: [mom_12_1, vol]                                     # mêmes signaux en niveau
+  signal_skip_days: 21          # momentum « 12-1 » / « 6-1 » : hors dernier mois ; retournement = dernier mois
+  signal_windows_days: {mom_12: 252, mom_6: 126, vol: 60, drawdown: 252}
+  min_available_assets: 20
+  context: {index: "^STOXX50E", vix: "^VIX", cache_file: market_context.csv, ma_days: 200, vol_days: 20,
+            download_start: "2007-01-01", download_end: "2026-11-21"}
+  annualization_days: 252
+  clip: 5.0
+  weekly_rule: "W-FRI"          # "W-FRI" = hebdomadaire ; "M" = mensuel
+
+env:
+  transaction_cost: 0.001
+  risk_aversion: 2.0            # récompense : r - (gamma/2) r^2 (utilité moyenne-variance)
+  risk_lambda: 0.0
+  variance_window: 12
+  episode_length: 52            # périodes par épisode (52 semaines ; 12 si mensuel)
+  action_scale: 3.0             # (inutilisé en mode residual)
+  reward_scale: 100.0
+  initial_allocation: equal_risky
+  eval_initial_allocation: equal_risky
+  turnover_includes_cash: false
+  action_mode: residual         # action nulle = 1/N sur les titres disponibles
+  residual_scale: 1.0           # inclinaisons : poids relatifs jusqu'à x e^2 (~7) entre titres
+  base_portfolio: equal         # (residual) référence des inclinaisons : equal | maxsharpe | minvar | riskparity | momentum
+  base_floor: 0.002             # (residual) plancher ajouté aux poids de référence (permet d'entrer sur un titre exclu)
+  cash_max: 0.5                 # gestion du risque : jusqu'à 50 % de cash
+  smoothing_alpha: 0.5
+  train_transaction_cost: 0.003
+  augment_permute_assets: true
+  feature_noise: 0.05
+
+baselines:
+  rebalance_frequency: monthly
+  cov_window_days: 756
+  min_window_days: 252
+  max_weight_sharpe: 0.15
+  annual_risk_free: 0.0
+  solver: CLARABEL
+  momentum_lookback_days: 252
+  momentum_skip_days: 21
+  momentum_top_k: 10            # 50 titres : top 10
+  strategies: [EqualWeight_1N, MinVariance, MaxSharpe, RiskParity, Momentum_12_1, LowVol]
+  lowvol_window_days: 60
+  lowvol_top_k: 10
+
+metrics:
+  periods_per_year: 52
+  annual_risk_free: 0.0
+  bootstrap:
+    n_resamples: 2000
+    block_length: 4
+    confidence: 0.95
+    reference: EqualWeight_1N   # 1/N sur les titres disponibles (jusqu'à 50)
+    seed: 123
+
+rl:
+  algorithm: PPO
+  seeds: [0, 1, 2, 3, 4]
+  total_timesteps: 40000
+  n_jobs: 1                     # séquentiel : le chargement de torch en parallèle échoue faute de mémoire sur ce poste
+  torch_threads: 1
+  n_envs: 1                     # environnements d'entraînement en parallèle (même processus)
+  eval_freq: 10400
+  checkpoint_selection: final
+  early_stopping_patience: 20
+  min_evals_before_stop: 10
+  ppo:
+    policy: shared_asset
+    learning_rate: 3.0e-4
+    lr_schedule: linear
+    gamma: 0.0                  # décision myope : les actions n'influencent pas le marché (bandit contextuel)
+    n_steps: 1040
+    batch_size: 260
+    n_epochs: 10
+    gae_lambda: 0.95
+    clip_range: 0.2
+    ent_coef: 0.005
+    vf_coef: 0.5
+    max_grad_norm: 0.5
+    net_arch: [32, 32]
+    log_std_init: -0.5
+    activation: tanh
+
+walk_forward:
+  timesteps: 40000
+  checkpoint_selection: final
+  folds:
+    - {train: ["2010-01-01", "2013-12-31"], validation: ["2014-01-01", "2015-12-31"]}
+    - {train: ["2010-01-01", "2015-12-31"], validation: ["2016-01-01", "2017-12-31"]}
+    - {train: ["2010-01-01", "2017-12-31"], validation: ["2018-01-01", "2019-12-31"]}
+    - {train: ["2010-01-01", "2019-12-31"], validation: ["2020-01-01", "2021-12-31"]}
+  final_train: ["2010-01-01", "2021-12-31"]
+
+# Réglage : chaque configuration = config de base + surcharges ; 3 seeds par bloc pendant le réglage,
+# critère = Sharpe de l'ensemble sur les 4 blocs de validation mis bout à bout.
+tuning:
+  seeds: [0, 1, 2]
+  grid:
+    - {name: base, overrides: {}}
+    - {name: tilt_fort, overrides: {env.residual_scale: 2.0}}
+    - {name: non_myope, overrides: {rl.ppo.gamma: 0.9}}
+    - {name: mensuel, overrides: {features.weekly_rule: "M", env.episode_length: 12}}
+    - {name: sans_cash, overrides: {env.cash_max: 0.0}}
+    - {name: rendement_pur, overrides: {env.risk_aversion: 0.0, env.train_transaction_cost: 0.001}}
+    - {name: autour_maxsharpe, overrides: {env.base_portfolio: maxsharpe}}
+    - {name: autour_minvar, overrides: {env.base_portfolio: minvar}}
+
+evaluation:
+  final_test_lock: results/.final_test_done
+  top_assets_in_weight_plot: 7
+  turnover_bins: 30

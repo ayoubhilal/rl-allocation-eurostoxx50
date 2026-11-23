@@ -1,0 +1,14 @@
+{
+  "algorithm": "PPO",
+  "seed": 0,
+  "timesteps_done": 40560,
+  "checkpoint_selection": "final",
+  "best_val_sharpe": NaN,
+  "final_val_sharpe": 0.9844731513813301,
+  "best_step": 0,
+  "stopped_early": false,
+  "n_episodes": 780,
+  "train_reward_mean_all": 9.754977755128206,
+  "train_reward_mean_last100": 9.18302597,
+  "duration_sec": 126.3
+}

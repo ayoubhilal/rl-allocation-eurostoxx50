@@ -1,0 +1,9 @@
+{
+  "name": "autour_maxsharpe",
+  "overrides": {
+    "env.base_portfolio": "maxsharpe"
+  },
+  "selected_at": "2026-11-23T01:33:17.082349",
+  "gain_vs_1N": 0.3316238352938723,
+  "criterion": "gain de Sharpe de l'ensemble sur 1/N (même fréquence), blocs mis bout à bout"
+}
